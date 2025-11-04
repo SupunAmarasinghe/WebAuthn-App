@@ -1,23 +1,13 @@
-# ---- Build stage ----
-FROM gradle:7.6.0-jdk11 AS build
+# Stage 1: Build the app with Gradle
+FROM eclipse-temurin:11-jdk AS build
 WORKDIR /app
+COPY . .
+RUN chmod +x ./gradlew
+RUN ./gradlew clean build -x test
 
-# Copy only necessary files first (for caching)
-COPY build.gradle settings.gradle ./
-COPY src ./src
-
-# Build the JAR file
-RUN gradle clean build -x test
-
-# ---- Run stage ----
-FROM openjdk:11-jdk-slim
+# Stage 2: Run the app
+FROM eclipse-temurin:11-jre
 WORKDIR /app
-
-# Copy the JAR from the build stage
 COPY --from=build /app/build/libs/*.jar app.jar
-
-# Expose the default Spring Boot port
 EXPOSE 8080
-
-# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
