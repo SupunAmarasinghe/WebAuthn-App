@@ -39,6 +39,7 @@ public class WebAuthnController {
         this.credRepo = credRepo;
         this.userRepo = userRepo;
         jsonMapper.registerModule(new Jdk8Module());
+        jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     }
 
     @PostMapping("/register/start")
@@ -60,9 +61,8 @@ public class WebAuthnController {
                 .extensions(RegistrationExtensionInputs.builder()
                     .credProps(true)
                     .build())
+                .timeout(60000L)
                 .build());
-
-        jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
         String json = null;
         try {
@@ -87,7 +87,6 @@ public class WebAuthnController {
 
         try {
             Object credential = body.get("response");
-            jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             String credentialJson = jsonMapper.writeValueAsString(credential);
 
             PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
@@ -157,7 +156,6 @@ public class WebAuthnController {
             PublicKeyCredentialRequestOptions options = request.getPublicKeyCredentialRequestOptions();
             sessionMap.put(username, request);
 
-            jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             String json = null;
             json = jsonMapper.writeValueAsString(options);
 
@@ -185,8 +183,8 @@ public class WebAuthnController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            String json = jsonMapper.writeValueAsString(credentialObj);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(credentialObj);
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc =
                 PublicKeyCredential.parseAssertionResponseJson(json);
 
