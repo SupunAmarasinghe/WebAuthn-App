@@ -56,7 +56,7 @@ public class WebAuthnController {
                 .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
                     .residentKey(ResidentKeyRequirement.DISCOURAGED)
                     .userVerification(UserVerificationRequirement.PREFERRED)
-                    .authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
+                    .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
                     .build())
                 .extensions(RegistrationExtensionInputs.builder()
                     .credProps(true)
