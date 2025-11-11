@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/webauthn")
-@CrossOrigin(origins = "https://web-authn-new-ui.vercel.app")
+@CrossOrigin(origins = "http://localhost:3000")
 public class WebAuthnController {
 
     private final RelyingParty relyingParty;
@@ -56,7 +56,7 @@ public class WebAuthnController {
                 .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
                     .residentKey(ResidentKeyRequirement.DISCOURAGED)
                     .userVerification(UserVerificationRequirement.PREFERRED)
-                    .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                    .authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
                     .build())
                 .extensions(RegistrationExtensionInputs.builder()
                     .credProps(true)
