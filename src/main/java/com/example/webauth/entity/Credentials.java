@@ -43,7 +43,7 @@ public class Credentials {
     }
     return Arrays.stream(transports.split(","))
         .map(String::trim)
-        .map(AuthenticatorTransport::valueOf)
+        .map(AuthenticatorTransport::of)
         .collect(Collectors.toList());
   }
 
