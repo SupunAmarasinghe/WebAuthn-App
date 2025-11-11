@@ -21,7 +21,7 @@ public class WebAuthnConfig {
         return RelyingParty.builder()
             .identity(rpIdentity)
             .credentialRepository(jpaCredentialRepository)
-            .origins(Set.of("http://localhost:3000"))
+            .origins(Set.of("https://web-authn-new-ui.vercel.app"))
             .build();
     }
 }

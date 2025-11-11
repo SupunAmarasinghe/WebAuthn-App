@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/webauthn")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://web-authn-new-ui.vercel.app")
 public class WebAuthnController {
 
     private final RelyingParty relyingParty;
