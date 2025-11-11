@@ -65,7 +65,7 @@ public class WebAuthnController {
                 .timeout(60000L)
                 .build());
 
-        log.info("register - start: ", options);
+        log.info("[Register_start:{}]", options);
 
         String json = null;
         try {
@@ -101,7 +101,7 @@ public class WebAuthnController {
                     .response(pkc)
                     .build());
 
-            log.info("register - finish: ", result);
+            log.info("[Register_finish:{}]", result);
 
             if (!result.isUserVerified()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Registration verification failed"));
@@ -158,7 +158,7 @@ public class WebAuthnController {
                     .build()
             );
 
-            log.info("authenticate - start: ", request);
+            log.info("[Authenticate_start:{}]", request);
 
             PublicKeyCredentialRequestOptions options = request.getPublicKeyCredentialRequestOptions();
             sessionMap.put(username, request);
@@ -209,7 +209,7 @@ public class WebAuthnController {
                     .build()
             );
 
-            log.info("authenticate - finish: ", result);
+            log.info("[Register_finish:{}]", result);
 
             if (result.isSuccess()) {
                 String credentialId = result.getCredential().getCredentialId().getBase64Url();
