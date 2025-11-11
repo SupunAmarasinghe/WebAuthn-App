@@ -14,7 +14,7 @@ public class WebAuthnConfig {
     @Bean
     public RelyingParty relyingParty(JpaCredentialRepository jpaCredentialRepository) {
         RelyingPartyIdentity rpIdentity = RelyingPartyIdentity.builder()
-            .id("localhost")
+            .id("web-authn-new-ui.vercel")
             .name("WebAuthn Demo")
             .build();
 
