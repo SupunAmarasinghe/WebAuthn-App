@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/webauthn")
 @CrossOrigin(origins = "https://web-authn-new-ui.vercel.app")
+@Slf4j
 public class WebAuthnController {
 
     private final RelyingParty relyingParty;
@@ -63,6 +65,8 @@ public class WebAuthnController {
                 .timeout(60000L)
                 .build());
 
+        log.info("register - start: ", options);
+
         String json = null;
         try {
             json = jsonMapper.writeValueAsString(options);
@@ -96,6 +100,8 @@ public class WebAuthnController {
                     .request(start)
                     .response(pkc)
                     .build());
+
+            log.info("register - finish: ", result);
 
             if (!result.isUserVerified()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Registration verification failed"));
@@ -152,6 +158,8 @@ public class WebAuthnController {
                     .build()
             );
 
+            log.info("authenticate - start: ", request);
+
             PublicKeyCredentialRequestOptions options = request.getPublicKeyCredentialRequestOptions();
             sessionMap.put(username, request);
 
@@ -200,6 +208,8 @@ public class WebAuthnController {
                     .response(pkc)
                     .build()
             );
+
+            log.info("authenticate - finish: ", result);
 
             if (result.isSuccess()) {
                 String credentialId = result.getCredential().getCredentialId().getBase64Url();
