@@ -35,13 +35,13 @@ public class JpaCredentialRepository implements CredentialRepository {
   @Override
   public Optional<ByteArray> getUserHandleForUsername(String username) {
     return userRepo.findByUserName(username)
-        .map(u -> new ByteArray(Base64.getUrlDecoder().decode(u.getId().toString())));
+        .map(u -> new ByteArray(Base64.getUrlDecoder().decode(u.getUserHandle())));
   }
 
   @Override
   public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-    Long id = Long.parseLong(userHandle.getBase64Url());
-    return userRepo.findById(id).map(AuthUser::getUserName);
+    String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(userHandle.getBytes());
+    return userRepo.findByUserHandle(encoded).map(AuthUser::getUserName);
   }
 
   @Override
@@ -50,7 +50,7 @@ public class JpaCredentialRepository implements CredentialRepository {
     return credRepo.findByCredentialId(credIdEncoded)
         .map(cred -> RegisteredCredential.builder()
             .credentialId(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
-            .userHandle(new ByteArray(Base64.getUrlDecoder().decode(cred.getUser().getId().toString())))
+            .userHandle(new ByteArray(Base64.getUrlDecoder().decode(cred.getUser().getUserHandle())))
             .publicKeyCose(new ByteArray(Base64.getUrlDecoder().decode(cred.getPublicKeyCose())))
             .signatureCount(cred.getSignatureCount())
             .build());
@@ -63,7 +63,7 @@ public class JpaCredentialRepository implements CredentialRepository {
         .stream()
         .map(cred -> RegisteredCredential.builder()
             .credentialId(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
-            .userHandle(new ByteArray(Base64.getUrlDecoder().decode(cred.getUser().getId().toString())))
+            .userHandle(new ByteArray(Base64.getUrlDecoder().decode(cred.getUser().getUserHandle())))
             .publicKeyCose(new ByteArray(Base64.getUrlDecoder().decode(cred.getPublicKeyCose())))
             .signatureCount(cred.getSignatureCount())
             .build())

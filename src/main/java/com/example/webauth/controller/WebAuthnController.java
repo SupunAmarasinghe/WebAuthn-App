@@ -46,13 +46,11 @@ public class WebAuthnController {
     @PostMapping("/register/start")
     public ResponseEntity startRegistration(@RequestBody UserDto user) {
         String username = user.getUsername();
-
-        AuthUser authUser = userRepo.findByUserName(username)
-            .orElseThrow(NoSuchElementException::new);
         UserIdentity userIdentity = UserIdentity.builder()
             .name(username)
             .displayName(username)
-            .id(new ByteArray(authUser.getId().toString().getBytes(StandardCharsets.UTF_8)))
+            .id(new ByteArray(username.getBytes(StandardCharsets.UTF_8)))//Set id of user table when integrating.
+            // U have to change the JpaCredentialRepository with userHandle usage and remove findByUserHandle from UserRepository
             .build();
 
         PublicKeyCredentialCreationOptions options = relyingParty.startRegistration(
@@ -107,10 +105,9 @@ public class WebAuthnController {
 
             AuthUser user = userRepo.findByUserName(body.get("username").toString())
                 .orElseGet(() -> {
-                    AuthUser u = AuthUser.builder()
-                        .userName(body.get("username").toString())
-                        .displayName(body.get("username").toString())
-                        .build();
+                    AuthUser u = AuthUser.builder().userName(body.get("username").toString()).displayName(body.get("username").toString())
+                        .userHandle(Base64.getUrlEncoder().withoutPadding()
+                            .encodeToString(body.get("username").toString().getBytes())).build();
                     return userRepo.save(u);
                 });
 
