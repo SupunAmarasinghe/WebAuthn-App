@@ -22,7 +22,6 @@ public class AuthUser {
 
   private String userName;
   private String displayName;
-  private String userHandle;
 
   @CreationTimestamp
   private LocalDateTime createdAt;

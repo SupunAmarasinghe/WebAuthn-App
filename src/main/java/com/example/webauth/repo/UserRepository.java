@@ -6,6 +6,5 @@ import java.util.*;
 
 public interface UserRepository extends JpaRepository<AuthUser, Long> {
   Optional<AuthUser> findByUserName(String userName);
-  Optional<AuthUser> findByUserHandle(String userHandle);
 }
 
