@@ -65,8 +65,6 @@ public class WebAuthnController {
                 .timeout(60000L)
                 .build());
 
-        log.info("[Register_start:{}]", options);
-
         String json = null;
         try {
             json = jsonMapper.writeValueAsString(options);
@@ -101,8 +99,6 @@ public class WebAuthnController {
                     .response(pkc)
                     .build());
 
-            log.info("[Register_finish:{}]", result);
-
             if (!result.isUserVerified()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Registration verification failed"));
             }
@@ -122,9 +118,7 @@ public class WebAuthnController {
                 .build();
 
             if (result.getKeyId().getTransports().isPresent()) {
-                cred.setTransports(
-                    result.getKeyId().getTransports().get().stream().map(AuthenticatorTransport::getId).collect(Collectors.toList())
-                );
+                cred.setTransportsList(new ArrayList<>(pkc.getResponse().getTransports()));
             }
             credRepo.save(cred);
 

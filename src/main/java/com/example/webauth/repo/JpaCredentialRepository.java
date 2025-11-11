@@ -26,11 +26,7 @@ public class JpaCredentialRepository implements CredentialRepository {
             .map(cred -> PublicKeyCredentialDescriptor.builder()
                 .id(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
                 .type(PublicKeyCredentialType.PUBLIC_KEY)
-                .transports(Optional.ofNullable(cred.getTransports())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .map(AuthenticatorTransport::of)
-                    .collect(Collectors.toSet()))
+                .transports(Set.copyOf(cred.getTransportsList()))
                 .build())
             .collect(Collectors.toSet()))
         .orElse(Collections.emptySet());
