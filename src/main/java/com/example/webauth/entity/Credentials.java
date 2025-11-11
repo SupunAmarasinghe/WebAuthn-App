@@ -32,10 +32,6 @@ public class Credentials {
   private String credentialId;
   private String publicKeyCose;
   private long signatureCount;
-
-  @ElementCollection
-  @CollectionTable(name = "credential_transports", joinColumns = @JoinColumn(name = "credential_id"))
-  @Column(name = "transport")
   private String transports;
 
   @CreationTimestamp
