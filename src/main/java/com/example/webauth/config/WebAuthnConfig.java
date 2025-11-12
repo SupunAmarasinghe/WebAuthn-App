@@ -1,6 +1,6 @@
 package com.example.webauth.config;
 
-import com.example.webauth.repo.DynamicCredentialRepository;
+import com.example.webauth.repo.JpaCredentialRepository;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ import java.util.Set;
 public class WebAuthnConfig {
 
     @Bean
-    public RelyingParty relyingParty(DynamicCredentialRepository repo) {
+    public RelyingParty relyingParty(JpaCredentialRepository jpaCredentialRepository) {
         RelyingPartyIdentity rpIdentity = RelyingPartyIdentity.builder()
             .id("web-authn-new-ui.vercel.app")
             .name("WebAuthn Demo")
@@ -20,7 +20,7 @@ public class WebAuthnConfig {
 
         return RelyingParty.builder()
             .identity(rpIdentity)
-            .credentialRepository(repo)
+            .credentialRepository(jpaCredentialRepository)
             .origins(Set.of("https://web-authn-new-ui.vercel.app"))
             .build();
     }
