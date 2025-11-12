@@ -4,6 +4,7 @@ import com.example.webauth.dto.UserDto;
 import com.example.webauth.entity.Credentials;
 import com.example.webauth.entity.AuthUser;
 import com.example.webauth.repo.CredentialsRepository;
+import com.example.webauth.repo.DynamicCredentialRepository;
 import com.example.webauth.repo.JpaCredentialRepository;
 import com.example.webauth.repo.UserRepository;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,17 +28,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebAuthnController {
 
     private final RelyingParty relyingParty;
-    private final JpaCredentialRepository repo;
     private final CredentialsRepository credRepo;
+    private final DynamicCredentialRepository dynamicCredRepo;
     private final UserRepository userRepo;
     private final ObjectMapper jsonMapper = new ObjectMapper();
     private final ConcurrentHashMap<String, Object> sessionMap = new ConcurrentHashMap<>();
 
-    public WebAuthnController(RelyingParty relyingParty, JpaCredentialRepository repo, CredentialsRepository credRepo,
-                              UserRepository userRepo) {
+    public WebAuthnController(RelyingParty relyingParty, CredentialsRepository credRepo,
+                              DynamicCredentialRepository dynamicCredRepo, UserRepository userRepo) {
         this.relyingParty = relyingParty;
-        this.repo = repo;
         this.credRepo = credRepo;
+        this.dynamicCredRepo = dynamicCredRepo;
         this.userRepo = userRepo;
         jsonMapper.registerModule(new Jdk8Module());
         jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
@@ -45,6 +46,7 @@ public class WebAuthnController {
 
     @PostMapping("/register/start")
     public ResponseEntity startRegistration(@RequestBody UserDto user) {
+        dynamicCredRepo.enableMultiDeviceMode(true);
         String username = user.getUsername();
         UserIdentity userIdentity = UserIdentity.builder()
             .name(username)
@@ -57,7 +59,8 @@ public class WebAuthnController {
             StartRegistrationOptions.builder().user(userIdentity)
                 .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
                     .residentKey(ResidentKeyRequirement.DISCOURAGED)
-                    .userVerification(UserVerificationRequirement.PREFERRED)
+                    .userVerification(UserVerificationRequirement.REQUIRED)
+                    .authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
                     .build())
                 .extensions(RegistrationExtensionInputs.builder()
                     .credProps(true)
@@ -134,6 +137,7 @@ public class WebAuthnController {
     @PostMapping("/authenticate/start")
     public ResponseEntity<?> startAuthentication(@RequestBody Map<String, Object> body) {
         try {
+            dynamicCredRepo.enableMultiDeviceMode(false);
             String username = (String) body.get("username");
             if (username == null || username.isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Username required"));
