@@ -152,8 +152,6 @@ public class WebAuthnController {
                     .build()
             );
 
-            log.info("[Authenticate_start:{}]", request);
-
             PublicKeyCredentialRequestOptions options = request.getPublicKeyCredentialRequestOptions();
             sessionMap.put(username, request);
 
@@ -202,8 +200,6 @@ public class WebAuthnController {
                     .response(pkc)
                     .build()
             );
-
-            log.info("[Register_finish:{}]", result);
 
             if (result.isSuccess()) {
                 String credentialId = result.getCredential().getCredentialId().getBase64Url();
