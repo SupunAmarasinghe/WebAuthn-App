@@ -133,6 +133,7 @@ public class WebAuthnController {
 
     @PostMapping("/authenticate/start")
     public ResponseEntity<?> startAuthentication(@RequestBody Map<String, Object> body) {
+        log.info("authenticate Start");
         try {
             String username = (String) body.get("username");
             if (username == null || username.isBlank()) {
