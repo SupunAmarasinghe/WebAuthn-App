@@ -206,6 +206,7 @@ public class WebAuthnController {
                 Credentials credential = credRepo.findByCredentialId(credentialId)
                     .orElseThrow(() -> new RuntimeException("Credential not found"));
 
+                log.info("[result: {} ]", result);
                 credential.setSignatureCount(result.getSignatureCount());
                 credRepo.save(credential);
 
